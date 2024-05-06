@@ -46,23 +46,41 @@ def get_player_move(board):
             print("Invalid choice. Try again.")
 
 def get_computer_move(board):
-     best_move = None
-     best_value = -float("inf")
+    best_move = None
+    best_value = -float('inf')  # Initialize to negative infinity
 
-     for i in range(9):
-          if board[i] == EMPTY:
-               board[i] = O
-               value = sum(MAGIC_SQUARE[j] for j in range(9) if board[j] == O)
-               board[i] = EMPTY
+    for i in range(9):
+        if board[i] == EMPTY:
+            # Check if the move leads to a win for the computer
+            board[i] = O
+            if check_winner(board) == O:
+                board[i] = EMPTY
+                return i
+            board[i] = EMPTY
 
-               if i == 4:
-                  value += 10
-               
-               if value > best_value:
-                    best_value = value
-                    best_move = i
-               
-     return best_move
+            # Check if the move blocks the player from winning
+            board[i] = X
+            if check_winner(board) == X:
+                board[i] = EMPTY
+                return i
+            board[i] = EMPTY
+
+            # Calculate the value of the move using the Magic Square
+            board[i] = O
+            move_value = sum(MAGIC_SQUARE[j] for j in range(9) if board[j] == O)
+            board[i] = EMPTY  # Reset the board
+
+            # Prioritize center and corners for the computer
+            if i == 4:
+                move_value += 10  # Center has a higher priority
+
+            # Update the best move if this move is better
+            if move_value > best_value:
+                best_move = i
+                best_value = move_value
+
+    return best_move
+
 
 def check_winner(board):
      
